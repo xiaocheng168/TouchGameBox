@@ -22,7 +22,12 @@
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.0",
-    "@electron-toolkit/utils": "^3.0.0"
+    "@electron-toolkit/utils": "^3.0.0",
+    "naive-ui": "^2.38.2",
+    "sass": "^1.77.4",
+    "vfonts": "^0.0.3",
+    "vue-route": "^1.5.1",
+    "vue-router": "^4.3.2"
   },
   "devDependencies": {
     "@electron-toolkit/eslint-config": "^1.0.2",

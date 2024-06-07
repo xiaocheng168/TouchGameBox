@@ -1,26 +1,75 @@
-<script setup lang="ts">
-import Versions from './components/Versions.vue'
+<template>
+  <n-config-provider :theme="darkTheme" class="main-window-box">
+    <div class="main-box opt">
+      <div class="main-header-box">
+        <Toolbar />
+      </div>
+    </div>
+    <n-layout has-sider class="opt">
+      <n-layout-sider style="user-select: none" bordered collapse-mode="width" :collapsed-width="0" :width="120"
+        :collapsed="collapsed" show-trigger @collapse="collapsed = true" @expand="collapsed = false">
+        <n-menu :collapsed="collapse" :options="menuOptions" :on-update:value="tabClick" />
+      </n-layout-sider>
+      <n-layout>
+        <n-layout-content>
+          <Transition name="slide-fade" mod="out-in">
+            <router-view />
+          </Transition>
+        </n-layout-content>
+      </n-layout>
+    </n-layout>
+  </n-config-provider>
+</template>
 
-const ipcHandle = () => window.electron.ipcRenderer.send('ping')
+<script setup lang="ts">
+import Toolbar from './components/toolbar/index.vue';
+import { darkTheme, lightTheme, MenuOption } from 'naive-ui'
+import { ref } from 'vue';
+import router from './route/route'
+const menuOptions: MenuOption[] = [
+  {
+    label: '原神',
+    key: 'GenshinImpadct',
+  },
+  {
+    label: '星穹铁道',
+    key: 'StarRail',
+  },
+  {
+    label: '鸣潮',
+    key: 'WutheringWaves',
+  },
+]
+const collapsed = ref(false)
+
+function tabClick(e: string) {
+  console.log(router.push(e));
+}
 </script>
 
-<template>
-  <img alt="logo" class="logo" src="./assets/electron.svg" />
-  <div class="creator">Powered by electron-vite</div>
-  <div class="text">
-    Build an Electron app with
-    <span class="vue">Vue</span>
-    and
-    <span class="ts">TypeScript</span>
-  </div>
-  <p class="tip">Please try pressing <code>F12</code> to open the devTool</p>
-  <div class="actions">
-    <div class="action">
-      <a href="https://electron-vite.org/" target="_blank" rel="noreferrer">Documentation</a>
-    </div>
-    <div class="action">
-      <a target="_blank" rel="noreferrer" @click="ipcHandle">Send IPC</a>
-    </div>
-  </div>
-  <Versions />
-</template>
+<style lang="scss">
+.main-window-box {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: url('./assets/electron.svg') no-repeat center center;
+}
+
+.opt {
+  opacity: 0.9;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
+}
+</style>

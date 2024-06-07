@@ -1,6 +1,7 @@
 <template>
     <div class="toolbar">
         <p class="title">TouchGameBox</p>
+
         <div class="ctrl-menu">
             <n-icon class="ctrl-btn-item" @click="hideWindow">
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -25,7 +26,12 @@
     </div>
 </template>
 <script setup lang="ts">
-import '../../global'
+// @ts-ignore
+import { configStore } from '@renderer/store/config';
+import '../global'
+
+const cs = configStore()
+
 
 function hideWindow() {
     window.electron.ipcRenderer.send('ctrl-menu-hide', 1)

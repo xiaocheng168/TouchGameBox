@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { addEvent } from './event/ctrlEvent'
+import gameEvent from './event/gameEvent'
 
 function createWindow(): void {
   // Create the browser window.
@@ -38,6 +39,7 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
   addEvent(mainWindow)
+  gameEvent()
 }
 
 // This method will be called when Electron has finished

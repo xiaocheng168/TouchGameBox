@@ -1,50 +1,110 @@
 <template>
-  <n-config-provider :theme="darkTheme" class="main-window-box">
-    <div class="main-box opt">
-      <div class="main-header-box">
-        <Toolbar />
-      </div>
-    </div>
-    <n-layout has-sider class="opt">
-      <n-layout-sider style="user-select: none" bordered collapse-mode="width" :collapsed-width="0" :width="120"
-        :collapsed="collapsed" show-trigger @collapse="collapsed = true" @expand="collapsed = false">
-        <n-menu :collapsed="collapse" :options="menuOptions" :on-update:value="tabClick" />
-      </n-layout-sider>
-      <n-layout>
-        <n-layout-content>
-          <Transition name="slide-fade" mod="out-in">
-            <router-view />
-          </Transition>
-        </n-layout-content>
-      </n-layout>
-    </n-layout>
+  <n-config-provider :theme="themeStyle" class="main-window-box">
+    <n-loading-bar-provider>
+      <n-notification-provider>
+        <n-message-provider>
+          <div class="main-header-box opt">
+            <Toolbar />
+            <InitApp />
+          </div>
+          <n-layout has-sider class="opt main-content-box">
+            <n-layout-sider style="user-select: none" bordered collapse-mode="width" :collapsed-width="0" :width="120"
+              :collapsed="cs.$state.menuHide" show-trigger @collapse="cs.$state.menuHide = true"
+              @expand="cs.$state.menuHide = false">
+              <n-menu :collapsed="cs.$state.menuHide" :options="menuOptions" @update:value="tabClick"
+                v-model:value="cs.$state.config.default" />
+            </n-layout-sider>
+            <n-layout style="background: transparent">
+              <div :style="bg" class="bg"></div>
+              <n-layout-content style="height: 100%;">
+                <Transition name="slide-fade" mod="out-in">
+                  <router-view />
+                </Transition>
+              </n-layout-content>
+            </n-layout>
+          </n-layout>
+        </n-message-provider>
+
+      </n-notification-provider>
+    </n-loading-bar-provider>
   </n-config-provider>
 </template>
 
 <script setup lang="ts">
-import Toolbar from './components/toolbar/index.vue';
+// @ts-ignore
+import Toolbar from './components/Toolbar.vue'
+// @ts-ignore
+import InitApp from './components/InitApp.vue'
 import { darkTheme, lightTheme, MenuOption } from 'naive-ui'
 import { ref } from 'vue';
 import router from './route/route'
+import { configStore } from './store/config';
 const menuOptions: MenuOption[] = [
   {
     label: '原神',
-    key: 'GenshinImpadct',
+    key: 'genshin',
   },
   {
     label: '星穹铁道',
-    key: 'StarRail',
+    key: 'starrail',
   },
   {
     label: '鸣潮',
-    key: 'WutheringWaves',
+    key: 'wuther',
   },
 ]
-const collapsed = ref(false)
+const themeStyle = ref(darkTheme)
 
+const cs = configStore()
+
+
+const bg = ref({
+  backgroundImage: `url(${cs.config.genshin?.imageBase64})`,
+  // opacity: 1,
+  // filter: 'blur(0)',
+  // transform: 'scale(1)'
+})
+
+
+/**
+ * 切换界面
+ */
 function tabClick(e: string) {
-  console.log(router.push(e));
+  router.push(e);
+  window.electron.ipcRenderer.send('setKeyConfig', {
+    key: 'default',
+    value: e
+  })
+  switch (e) {
+    case 'genshin': {
+      bg.value.backgroundImage = `url(${cs.config.genshin?.imageBase64})`
+      break;
+    }
+    case 'starrail': {
+      bg.value.backgroundImage = `url(${cs.config.starrail?.imageBase64})`
+      break;
+    }
+    case 'wuther': {
+      bg.value.backgroundImage = `url(${cs.config.wuther?.imageBase64})`
+      break;
+    }
+  }
+  // bg.value.opacity = 1
+  // bg.value.filter = 'blur(3px)'
+  // bg.value.transform = 'scale(1.5)'
+  // setTimeout(() => {
+  //   bg.value.filter = 'blur(0)'
+  //   bg.value.transform = 'scale(1)'
+  // }, 300);
 }
+
+setTimeout(() => {
+  tabClick(router.currentRoute.value.path.replace('/', ''))
+}, 1000);
+
+// 随主题
+const themeMedia = window.matchMedia("(prefers-color-scheme: light)");
+themeMedia.addListener(e => themeStyle.value = e.matches ? lightTheme : darkTheme)
 </script>
 
 <style lang="scss">
@@ -52,11 +112,28 @@ function tabClick(e: string) {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: url('./assets/electron.svg') no-repeat center center;
 }
 
-.opt {
-  opacity: 0.9;
+.bg {
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  z-index: -1;
+  transition: all .5s linear;
+  transform: scale(1);
+}
+
+
+
+.main-box {
+  height: 100vh;
+
+  .main-content-box {
+    height: 500px;
+  }
 }
 
 .slide-fade-enter-active {

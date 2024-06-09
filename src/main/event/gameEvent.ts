@@ -77,6 +77,11 @@ export default function gameEvent() {
         config[args.key] = args.value
         writeConfig(config)
     })
+
+    ipcMain.on('getKeyConfig', (e, args) => {
+        const config = readConfig()
+        e.reply('getKeyConfig', config[args])
+    })
 }
 
 

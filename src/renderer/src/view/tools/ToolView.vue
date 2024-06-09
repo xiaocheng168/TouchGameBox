@@ -6,9 +6,13 @@
     </div>
 </template>
 <script lang="ts" setup>
+import { useLoadingBar, useMessage, useNotification } from 'naive-ui';
 import { onMounted, ref } from 'vue';
 const pluginVues = import.meta.glob('../../components/tools/*.vue')
 const loadPlugins = ref<any[]>([]);
+window.loadBar = useLoadingBar()
+window.message = useMessage()
+window.notific = useNotification()
 onMounted(async () => {
     for (const key in pluginVues) {
         const module: any = await pluginVues[key]()

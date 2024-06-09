@@ -6,8 +6,10 @@ export function pluginEvent() {
         switch (args.type) {
             case 'openWindow': {
                 const nw = new BrowserWindow({
-                    width: 800,
-                    height: 600,
+                    width: 450,
+                    height: 550,
+                    resizable: false,
+                    minimizable: false,
                     webPreferences: {
                         nodeIntegration: true,
                     },
@@ -18,6 +20,7 @@ export function pluginEvent() {
                 let av = setInterval(() => {
                     if (nw.isDestroyed()) {
                         clearInterval(av)
+                        e.reply('pluginEvent', false)
                         return
                     }
                     let cookiesps = nw.webContents.session.cookies.get({})
@@ -32,6 +35,7 @@ export function pluginEvent() {
                                 cookies: cookiePack,
                                 url: args.url,
                             })
+                            clearInterval(av)
                             nw.close()
                         }
                     })

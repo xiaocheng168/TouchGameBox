@@ -31,9 +31,7 @@
 </template>
 
 <script setup lang="ts">
-// @ts-ignore
 import Toolbar from './components/Toolbar.vue'
-// @ts-ignore
 import InitApp from './components/InitApp.vue'
 import { darkTheme, lightTheme, MenuOption } from 'naive-ui'
 import { ref } from 'vue';
@@ -51,6 +49,10 @@ const menuOptions: MenuOption[] = [
   {
     label: '鸣潮',
     key: 'wuther',
+  },
+  {
+    label: '工具箱',
+    key: 'tools',
   },
 ]
 const themeStyle = ref(darkTheme)

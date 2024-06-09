@@ -17,6 +17,11 @@ const routes: RouteRecordRaw[] = [
         path: '/wuther',
         name: '鸣潮',
         component: () => import('../view/wuther/WutherView.vue')
+    },
+    {
+        path: '/tools',
+        name: '工具箱',
+        component: () => import('../view/tools/ToolView.vue')
     }
 ]
 

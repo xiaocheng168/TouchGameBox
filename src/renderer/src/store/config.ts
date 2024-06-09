@@ -6,6 +6,7 @@ export const configStore = defineStore('config', {
                 default: 'genshin'
             } as any,
             menuHide: false,
+            toolCard: []
         }
     }
 })

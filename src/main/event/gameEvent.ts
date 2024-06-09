@@ -66,7 +66,7 @@ export default function gameEvent() {
         process.addListener('error', () => e.reply('startGame', false))
         setTimeout(() => e.reply('startGame', true), 3000);
     })
-    
+
     ipcMain.on('stopGame', (e, args) => {
         e.reply('stopGame', gameProcess[args].kill('SIGTERM'))
     })
@@ -79,17 +79,28 @@ export default function gameEvent() {
     })
 }
 
+
+export function setKeyConfig(key: string, value: any) {
+    const config = readConfig()
+    config[key] = value
+    writeConfig(config)
+}
+
+export function getKeyConfig(key: string, def: any) {
+    return readConfig()[key] ?? def
+}
+
 /**
  * 写配置文件
  */
-function writeConfig(config) {
+export function writeConfig(config) {
     fs.writeFileSync(configFile, JSON.stringify(config))
 }
 
 /**
  * 读入配置文件
  */
-function readConfig() {
+export function readConfig() {
     // 判断文件是否存在
     if (!fs.existsSync(configFile)) {
         fs.writeFileSync(configFile, JSON.stringify(

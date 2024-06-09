@@ -16,7 +16,7 @@ export default function gameEvent() {
         Object.keys(args).forEach(game => {
             switch (game) {
                 case 'genshin': {
-                    const path: string = args[game].path.replace('\\Genshin Impact Game\\YuanShen.exe', '')
+                    const path: string = args[game].path.replace('\\Genshin Impact Game\\YuanShen.exe', '').replace('\\Genshin Impact Game\\GenshinImpact.exe', '')
                     //随机壁纸
                     const bg: string[] = fs.readdirSync(path + "\\bg\\");
                     args[game].image = path + '\\bg\\' + bg[Math.max((Math.random() * bg.length) - 1, bg.length - 1)]
@@ -55,39 +55,20 @@ export default function gameEvent() {
         e.reply('getConfig', readConfig())
     })
 
-    var genshin: ChildProcess;
-    var starrail: ChildProcess;
-    var wuther: ChildProcess;
+    var gameProcess = {
+        genshn: ChildProcess,
+        starrail: ChildProcess,
+        wuther: ChildProcess,
+    }
 
     ipcMain.on('startGame', (e, args) => {
-        switch (args) {
-            case 'genshin': {
-                genshin = spawn(`${readConfig().genshin?.path.replace(/\\/g, '/')}`)
-                setTimeout(() => e.reply('startGame', true), 3000);
-            }
-            case 'starrail': {
-                starrail = spawn(`${readConfig().starrail?.path.replace(/\\/g, '/')}`)
-                setTimeout(() => e.reply('startGame', true), 3000);
-            }
-            case 'wuther': {
-                wuther = spawn(`${readConfig().wuther?.path.replace(/\\/g, '/')}`)
-                setTimeout(() => e.reply('startGame', true), 3000);
-            }
-        }
+        let process = gameProcess[args] = spawn(`${readConfig().genshin?.path.replace(/\\/g, '/')}`)
+        process.addListener('error', () => e.reply('startGame', false))
+        setTimeout(() => e.reply('startGame', true), 3000);
     })
+    
     ipcMain.on('stopGame', (e, args) => {
-        switch (args) {
-            case 'genshin': {
-                e.reply('stopGame', genshin.kill('SIGTERM'))
-            }
-            case 'starrail': {
-                e.reply('stopGame', starrail.kill('SIGTERM'))
-            }
-            case 'wuther': {
-                // 这里有问题。奇怪的两个东西
-                e.reply('stopGame', wuther.kill('SIGTERM'))
-            }
-        }
+        e.reply('stopGame', gameProcess[args].kill('SIGTERM'))
     })
 
 

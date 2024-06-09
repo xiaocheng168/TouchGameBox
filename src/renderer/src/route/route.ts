@@ -1,3 +1,4 @@
+import { configStore } from "@renderer/store/config";
 import { RouteRecordRaw, createRouter, createWebHashHistory } from "vue-router";
 
 
@@ -22,5 +23,13 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
     history: createWebHashHistory(),
     routes
+})
+
+
+
+
+router.beforeEach((e) => {
+    const cs = configStore()
+    cs.$state.config.default = e.path.replace('/', '');
 })
 export default router

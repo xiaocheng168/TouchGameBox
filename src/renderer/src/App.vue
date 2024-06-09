@@ -57,14 +57,13 @@ const themeStyle = ref(darkTheme)
 
 const cs = configStore()
 
-
 const bg = ref({
-  backgroundImage: `url(${cs.config.genshin?.imageBase64})`,
-  // opacity: 1,
-  // filter: 'blur(0)',
-  // transform: 'scale(1)'
+  backgroundImage: `url(${cs.config.genshin?.imageBase64 ?? getBg('gs')})`,
 })
 
+function getBg(gn: 'gs' | 'sr' | 'wh') {
+  return new URL(`./assets/bg/${gn}.png`, import.meta.url)
+}
 
 /**
  * 切换界面
@@ -77,34 +76,29 @@ function tabClick(e: string) {
   })
   switch (e) {
     case 'genshin': {
-      bg.value.backgroundImage = `url(${cs.config.genshin?.imageBase64})`
+      bg.value.backgroundImage = `url(${cs.config.genshin?.imageBase64 ?? getBg('gs')})`
       break;
     }
     case 'starrail': {
-      bg.value.backgroundImage = `url(${cs.config.starrail?.imageBase64})`
+      bg.value.backgroundImage = `url(${cs.config.starrail?.imageBase64 ?? getBg('sr')})`
       break;
     }
     case 'wuther': {
-      bg.value.backgroundImage = `url(${cs.config.wuther?.imageBase64})`
+      bg.value.backgroundImage = `url(${cs.config.wuther?.imageBase64 ?? getBg('wh')})`
       break;
     }
   }
-  // bg.value.opacity = 1
-  // bg.value.filter = 'blur(3px)'
-  // bg.value.transform = 'scale(1.5)'
-  // setTimeout(() => {
-  //   bg.value.filter = 'blur(0)'
-  //   bg.value.transform = 'scale(1)'
-  // }, 300);
 }
 
-setTimeout(() => {
-  tabClick(router.currentRoute.value.path.replace('/', ''))
-}, 1000);
+setTimeout(() => tabClick(router.currentRoute.value.path.replace('/', '')), 500);
 
 // 随主题
 const themeMedia = window.matchMedia("(prefers-color-scheme: light)");
-themeMedia.addListener(e => themeStyle.value = e.matches ? lightTheme : darkTheme)
+changeTheme(themeMedia)
+themeMedia.addListener(e => changeTheme(e))
+function changeTheme(e) {
+  themeStyle.value = e.matches ? lightTheme : darkTheme
+}
 </script>
 
 <style lang="scss">
@@ -122,11 +116,19 @@ themeMedia.addListener(e => themeStyle.value = e.matches ? lightTheme : darkThem
   height: 100vh;
   width: 100vw;
   z-index: -1;
-  transition: all .5s linear;
-  transform: scale(1);
+  transition: all .5s cubic-bezier(0.075, 0.82, 0.165, 1);
+  animation: initBg 0.5s cubic-bezier(0.93, 0.19, 0.31, 0.61) forwards;
 }
 
+@keyframes initBg {
+  from {
+    opacity: 0;
+  }
 
+  to {
+    opacity: 1;
+  }
+}
 
 .main-box {
   height: 100vh;

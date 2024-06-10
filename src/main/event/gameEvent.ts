@@ -62,7 +62,7 @@ export default function gameEvent() {
     }
 
     ipcMain.on('startGame', (e, args) => {
-        let process = gameProcess[args] = spawn(`${readConfig().genshin?.path.replace(/\\/g, '/')}`)
+        let process = gameProcess[args] = spawn(`${readConfig()[args]?.path.replace(/\\/g, '/')}`)
         process.addListener('error', () => e.reply('startGame', false))
         setTimeout(() => e.reply('startGame', true), 3000);
     })

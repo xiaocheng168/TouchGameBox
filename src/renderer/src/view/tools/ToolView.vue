@@ -1,6 +1,6 @@
 <template>
     <div class="card-list">
-        <n-card v-for="(Component, index) in loadPlugins" class="card" :title="pluginInfos[index]?.title">
+        <n-card v-for="(Component, index) in loadPlugins" class="card" :key="index" :title="pluginInfos[index]?.title">
             <component :is="Component" :key="index" :ref="el => pluginInfos[index] = el"></component>
         </n-card>
     </div>
@@ -11,6 +11,7 @@ import { onMounted, ref } from 'vue';
 const pluginVues = import.meta.glob('../../components/tools/*.vue')
 const loadPlugins = ref<any[]>([]);
 const pluginInfos = ref({})
+import '../../global'
 setTimeout(() => {
     console.log(pluginInfos.value);
 }, 1000);
@@ -23,6 +24,7 @@ onMounted(async () => {
         loadPlugins.value.push(module.default)
     }
 })
+
 </script>
 <style lang="scss">
 .card-list {

@@ -6,9 +6,12 @@
             </div>
         </div>
         <div class="bottom-box">
-            <n-button type="success" :loading="loading" v-if="!starting" @click="startGame(gameName)">启动游戏</n-button>
-            <n-button type="error" :loading="loading" v-else @click="stopGame(gameName)">关闭游戏</n-button>
-            <n-button type="success" :loading="loading" @click="selectGame(gameName)">选择游戏</n-button>
+            <n-button type="success" :loading="cs.$state.config[gameName].loading"
+                v-if="!cs.$state.config[gameName].starting" @click="startGame(gameName)">启动游戏</n-button>
+            <n-button type="error" :loading="cs.$state.config[gameName].loading" v-else
+                @click="stopGame(gameName)">关闭游戏</n-button>
+            <n-button type="success" :loading="cs.$state.config[gameName].loading"
+                @click="selectGame(gameName)">选择游戏</n-button>
         </div>
         <p v-if="cs.config?.genshin?.path">
             {{ cs.config?.genshin?.path }}
@@ -21,14 +24,13 @@ import { configStore } from "@renderer/store/config";
 import { useLoadingBar, useMessage, useNotification } from "naive-ui";
 import { ref } from "vue";
 import '../../global'
+// @ts-ignore
 import { selectGame, startGame, stopGame } from "@renderer/utils/game";
-const loading = ref(false)
-const starting = ref(false)
+const cs = configStore()
 const gameName = 'genshin'
 window.loadBar = useLoadingBar()
 window.message = useMessage()
 window.notific = useNotification()
-const cs = configStore()
 </script>
 <style lang="scss">
 .genshin-content-box {

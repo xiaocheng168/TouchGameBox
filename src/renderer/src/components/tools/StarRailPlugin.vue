@@ -1,11 +1,11 @@
 <template>
-    n-card
+
 </template>
 <script lang="ts" setup>
 
 
 defineExpose({
-    title: '星穹铁道呢'
+    title: '星穹铁道'
 })
 </script>
 <style lang="scss"></style>

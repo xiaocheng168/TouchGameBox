@@ -6,9 +6,14 @@
             </div>
         </div>
         <div class="bottom-box">
-            <n-button type="success" :loading="loading" v-if="!starting" @click="startGame(gameName)">启动游戏</n-button>
-            <n-button type="error" :loading="loading" v-else @click="stopGame('wuther')">关闭游戏</n-button>
-            <n-button type="success" :loading="loading" @click="selectGame('wuther')">选择游戏</n-button>
+            <div class="bottom-box">
+                <n-button type="success" :loading="cs.$state.config[gameName].loading"
+                    v-if="!cs.$state.config[gameName].starting" @click="startGame(gameName)">启动游戏</n-button>
+                <n-button type="error" :loading="cs.$state.config[gameName].loading" v-else
+                    @click="stopGame(gameName)">关闭游戏</n-button>
+                <n-button type="success" :loading="cs.$state.config[gameName].loading"
+                    @click="selectGame(gameName)">选择游戏</n-button>
+            </div>
         </div>
 
         <input type="file" hidden id="file" accept=".exe">

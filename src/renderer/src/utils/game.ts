@@ -4,6 +4,9 @@ import { reloadConfig } from "./config";
 
 export function startGame(gameName: 'genshin' | 'starrail' | 'wuther') {
     window.loadBar.start();
+    const cs = configStore()
+    cs.$state.config[gameName].loading = true
+    console.log(gameName);
 
     window.electron.ipcRenderer.on('startGame', (_e, args) => {
         // 如果启动是错误的 false!
@@ -17,19 +20,20 @@ export function startGame(gameName: 'genshin' | 'starrail' | 'wuther') {
                 duration: 5000,
             })
             window.loadBar.finish();
+            cs.$state.config[gameName].starting = true
         }
+        cs.$state.config[gameName].loading = false
         window.electron.ipcRenderer.removeAllListeners('startGame')
     })
-
     window.electron.ipcRenderer.send('startGame', gameName)
-
-    return Promise.reject()
 }
 
 export function stopGame(gameName: 'genshin' | 'starrail' | 'wuther') {
+    const cs = configStore()
     window.loadBar.start();
     window.electron.ipcRenderer.on('stopGame', (_e, _args) => {
         window.loadBar.finish()
+        cs.$state.config[gameName].starting = false
     })
     window.electron.ipcRenderer.send('stopGame', gameName)
 }

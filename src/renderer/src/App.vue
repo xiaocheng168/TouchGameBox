@@ -34,7 +34,9 @@
 </template>
 
 <script setup lang="ts">
+// @ts-ignore
 import Toolbar from './components/Toolbar.vue'
+// @ts-ignore
 import InitApp from './components/InitApp.vue'
 import { darkTheme, lightTheme, MenuOption } from 'naive-ui'
 import { ref } from 'vue';
@@ -67,6 +69,7 @@ const bg = ref({
 })
 
 function getBg(gn: 'gs' | 'sr' | 'wh') {
+  // @ts-ignore
   return new URL(`./assets/bg/${gn}.png`, import.meta.url)
 }
 

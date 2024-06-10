@@ -11,6 +11,7 @@ import { ref } from 'vue';
 import '../../global'
 const loading = ref(false)
 const isLogin = ref(false)
+const title = '原神工具盒子'
 function login() {
     loading.value = true
     window.electron.ipcRenderer.send('pluginEvent', {
@@ -49,6 +50,10 @@ getKeyConfig('mihoyo', (value) => {
     }
 })
 
+
+defineExpose({
+    title
+})
 </script>
 <style lang="scss" scope>
 .button-group {

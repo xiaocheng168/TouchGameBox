@@ -1,7 +1,7 @@
 <template>
     <div class="card-list">
-        <n-card v-for="(Component, index) in loadPlugins" class="card" :key="index" :title="index + 1">
-            <component :is="Component" :key="index"></component>
+        <n-card v-for="(Component, index) in loadPlugins" class="card" :title="pluginInfos[index]?.title">
+            <component :is="Component" :key="index" :ref="el => pluginInfos[index] = el"></component>
         </n-card>
     </div>
 </template>
@@ -10,6 +10,10 @@ import { useLoadingBar, useMessage, useNotification } from 'naive-ui';
 import { onMounted, ref } from 'vue';
 const pluginVues = import.meta.glob('../../components/tools/*.vue')
 const loadPlugins = ref<any[]>([]);
+const pluginInfos = ref({})
+setTimeout(() => {
+    console.log(pluginInfos.value);
+}, 1000);
 window.loadBar = useLoadingBar()
 window.message = useMessage()
 window.notific = useNotification()

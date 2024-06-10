@@ -3,28 +3,31 @@
     <n-loading-bar-provider>
       <n-notification-provider>
         <n-message-provider>
-          <div class="main-header-box opt">
-            <Toolbar />
-            <InitApp />
-          </div>
-          <n-layout has-sider class="opt main-content-box">
-            <n-layout-sider style="user-select: none" bordered collapse-mode="width" :collapsed-width="0" :width="120"
-              :collapsed="cs.$state.menuHide" show-trigger @collapse="cs.$state.menuHide = true"
-              @expand="cs.$state.menuHide = false">
-              <n-menu :collapsed="cs.$state.menuHide" :options="menuOptions" @update:value="tabClick"
-                v-model:value="cs.$state.config.default" />
-            </n-layout-sider>
-            <n-layout style="background: transparent">
-              <div :style="bg" class="bg"></div>
-              <n-layout-content style="height: 100%;">
-                <Transition name="slide-fade" mod="out-in">
-                  <router-view />
-                </Transition>
-              </n-layout-content>
-            </n-layout>
-          </n-layout>
-        </n-message-provider>
 
+          <n-dialog-provider>
+            <div class="main-header-box opt">
+              <Toolbar />
+              <InitApp />
+            </div>
+            <n-layout has-sider class="opt main-content-box">
+              <n-layout-sider style="user-select: none" bordered collapse-mode="width" :collapsed-width="0" :width="120"
+                :collapsed="cs.$state.menuHide" show-trigger @collapse="cs.$state.menuHide = true"
+                @expand="cs.$state.menuHide = false">
+                <n-menu :collapsed="cs.$state.menuHide" :options="menuOptions" @update:value="tabClick"
+                  v-model:value="cs.$state.config.default" />
+              </n-layout-sider>
+              <n-layout style="background: transparent">
+                <div :style="bg" class="bg"></div>
+                <n-layout-content style="height: 100%;">
+                  <Transition name="slide-fade" mod="out-in">
+                    <router-view />
+                  </Transition>
+                </n-layout-content>
+              </n-layout>
+            </n-layout>
+          </n-dialog-provider>
+
+        </n-message-provider>
       </n-notification-provider>
     </n-loading-bar-provider>
   </n-config-provider>
@@ -119,7 +122,8 @@ function changeTheme(e) {
   width: 100vw;
   z-index: -1;
   transition: all .5s cubic-bezier(0.075, 0.82, 0.165, 1);
-  animation: initBg 0.5s cubic-bezier(0.93, 0.19, 0.31, 0.61) forwards;
+  animation: initBg 0.5s cubic-bezier(0.93, 0.19, 0.31, 0.61);
+
 }
 
 @keyframes initBg {

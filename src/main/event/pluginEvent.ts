@@ -1,5 +1,6 @@
 
-import { ipcMain } from 'electron'
+import axios from 'axios'
+import { ipcMain, net } from 'electron'
 import { BrowserWindow } from 'electron/main'
 export function pluginEvent() {
     ipcMain.on('pluginEvent', (e, args) => {
@@ -40,6 +41,23 @@ export function pluginEvent() {
                         }
                     })
                 }, 1000)
+                break;
+            }
+            case 'request': {
+                net.request({
+                    url: 'https://api-takumi.mihoyo.com/binding/api/getUserGameRolesByCookie',
+                    method: args.method,
+                    headers: {
+                        'Cookie': 'COOKIE'
+                    },
+                }).on('response', (r) => {
+                    r.on('data', (res) => {
+                        e.reply('pluginEvent', {
+                            type: 'response',
+                            response: JSON.parse(res.toString())
+                        })
+                    })
+                }).end()
             }
         }
     })

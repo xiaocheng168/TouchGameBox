@@ -1,5 +1,6 @@
 import { configStore } from "@renderer/store/config";
 import { toRaw } from "vue";
+import { reloadConfig } from "./config";
 
 export function startGame(gameName: 'genshin' | 'starrail' | 'wuther') {
     window.loadBar.start();
@@ -43,14 +44,17 @@ export function selectGame(gameName: 'genshin' | 'starrail' | 'wuther') {
     let file = document.createElement('input')
     file.type = 'file'
     file.accept = '.exe'
+    console.log(gameName);
+
     file.addEventListener('change', (_e) => {
         // @ts-ignore
         const game = file?.files[0];
         // @ts-ignore
-        if (!gameFile[gameName].includes(game.path)) {
+        console.log(game);
+        if (!gameFile[gameName].includes(game.name)) {
             window.message.error('请选择正确的游戏文件' + gameFile[gameName].toString())
         } else {
-            cs.$state.config.genshin = {
+            cs.$state.config[gameName] = {
                 path: game.path,
                 fps: 144,
                 image: '',
@@ -58,6 +62,7 @@ export function selectGame(gameName: 'genshin' | 'starrail' | 'wuther') {
             }
             // 申请保存配置
             window.electron.ipcRenderer.send('setConfig', toRaw(cs.$state.config))
+            reloadConfig()
         }
     })
     file.click()

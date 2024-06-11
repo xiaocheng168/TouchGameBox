@@ -26,9 +26,10 @@ export function pluginEvent() {
                     cookiesps.then((cookies) => {
                         let cookiePack = ''
                         for (const cookie of cookies) {
-                            cookiePack += `${cookie.name}=${cookie.value}&`
+                            cookiePack += `${cookie.name}=${cookie.value};`
                         }
-                        if (cookiePack.includes('&account_id=')) {
+
+                        if (cookiePack.includes(';account_id=')) {
                             e.reply('pluginEvent', {
                                 type: 'cookies',
                                 cookies: cookiePack,
@@ -42,12 +43,11 @@ export function pluginEvent() {
                 break;
             }
             case 'request': {
+                console.log(args)
                 net.request({
-                    url: 'https://api-takumi.mihoyo.com/binding/api/getUserGameRolesByCookie',
-                    method: args.method,
-                    headers: {
-                        'Cookie': 'COOKIE'
-                    },
+                    url: args.url,
+                    method: args.method ?? 'GET',
+                    headers: args.header
                 }).on('response', (r) => {
                     r.on('data', (res) => {
                         e.reply('pluginEvent', {

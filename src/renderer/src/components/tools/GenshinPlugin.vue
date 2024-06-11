@@ -16,10 +16,12 @@ import '../../global'
 import { useDialog } from 'naive-ui';
 import { requestHttp } from '@renderer/utils/plugin';
 import { getKeyConfig } from '@renderer/utils/config';
+import { configStore } from '@renderer/store/config';
 const loading = ref(false)
 const isLogin = ref(false)
 const title = '原神工具盒子'
 const dialog = useDialog()
+const cs = configStore()
 function login() {
     dialog.success({
         title: '登录米游社 询问?',
@@ -53,7 +55,9 @@ function login() {
 
 onMounted(() => checkLogin())
 
-requestHttp('https://api-takumi.mihoyo.com/binding/api/getUserGameRolesByCookie', 'GET', {}, (e) => {
+requestHttp('https://api-takumi.mihoyo.com/binding/api/getUserGameRolesByCookie', 'GET', {}, {
+    'Cookie': cs.$state.config.mihoyo
+}, (e) => {
     console.log(e);
 })
 

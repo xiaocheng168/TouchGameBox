@@ -67,7 +67,7 @@ export function selectGame(gameName: 'genshin' | 'starrail' | 'wuther') {
             }
             // 申请保存配置
             window.electron.ipcRenderer.send('setConfig', toRaw(cs.$state.config))
-            setTimeout(() => reloadConfig(), 1000);
+            reloadConfig()
         }
     })
     file.click()

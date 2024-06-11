@@ -8,7 +8,7 @@
         <div class="bottom-box">
             <div class="bottom-box">
                 <n-button type="success" :loading="cs.$state.config[gameName].loading"
-                    v-if="!cs.$state.config[gameName].starting" @click="startGame(gameName)">启动游戏</n-button>
+                    v-if="!cs.$state.config[gameName]?.starting" @click="startGame(gameName)">启动游戏</n-button>
                 <n-button type="error" :loading="cs.$state.config[gameName].loading" v-else
                     @click="stopGame(gameName)">关闭游戏</n-button>
                 <n-button type="success" :loading="cs.$state.config[gameName].loading"

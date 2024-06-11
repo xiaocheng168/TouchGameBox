@@ -110,6 +110,10 @@ function changeTheme(e) {
 </script>
 
 <style lang="scss">
+p {
+  text-shadow: 0 0 5px black;
+}
+
 .main-window-box {
   height: 100vh;
   display: flex;

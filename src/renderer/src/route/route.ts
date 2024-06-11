@@ -36,5 +36,12 @@ const router = createRouter({
 router.beforeEach((e) => {
     const cs = configStore()
     cs.$state.config.default = e.path.replace('/', '');
+    // 设置默认属性
+    if (!cs.$state.config[cs.$state.config.default]) {
+        cs.$state.config[cs.$state.config.default] = {
+            starting: false,
+            loading: false
+        }
+    }
 })
 export default router

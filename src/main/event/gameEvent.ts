@@ -136,10 +136,5 @@ export function readConfig() {
     }
     // 读取文件内容
     let c = fs.readFileSync(configFile, 'utf-8')
-    let config = JSON.parse(c == '' ? '{}' : c)
-    Object.keys(config ?? {}).forEach((element: any) => {
-        if (config[element]?.loading) config[element].loading = false
-        if (config[element]?.starting) config[element].starting = false
-    });
-    return config
+    return JSON.parse(c == '' ? '{}' : c)
 }

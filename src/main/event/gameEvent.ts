@@ -1,5 +1,5 @@
 import { exec, spawn } from "child_process";
-import { app, ipcMain } from "electron";
+import { Notification, app, ipcMain } from "electron";
 import path from "path";
 
 
@@ -22,6 +22,7 @@ export default function gameEvent() {
         Object.keys(args).forEach(game => {
             switch (game) {
                 case 'genshin': {
+                    if (!args[game].path) break;
                     const path: string = args[game].path.replace('\\Genshin Impact Game\\YuanShen.exe', '').replace('\\Genshin Impact Game\\GenshinImpact.exe', '')
                     //随机壁纸
                     const bg: string[] = fs.readdirSync(path + "\\bg\\");
@@ -30,6 +31,7 @@ export default function gameEvent() {
                     break;
                 }
                 case 'starrail': {
+                    if (!args[game].path) break;
                     const path: string = args[game].path.replace('\\Game\\StarRail.exe', '')
                     //随机壁纸
                     const bg: string[] = fs.readdirSync(path + "\\bg\\");
@@ -38,10 +40,10 @@ export default function gameEvent() {
                     break;
                 }
                 case 'wuther': {
+                    if (!args[game].path) break;
                     const path: string = args[game].path.replace('\\Wuthering Waves Game\\Wuthering Waves.exe', '')
                     //随机壁纸
                     let bg: string[] = fs.readdirSync(path + "\\kr_game_cache\\animate_bg\\");
-
                     let md5 = '';
                     for (const dir of bg) {
                         if (dir.length === 32) {
@@ -62,7 +64,15 @@ export default function gameEvent() {
     })
 
     ipcMain.on('startGame', (e, args) => {
-        let process = spawn(`${readConfig()[args]?.path.replace(/\\/g, '/')}`)
+        let gamePath = readConfig()[args]?.path?.replace(/\\/g, '/')
+        if (!gamePath) {
+            new Notification({
+                icon: 'warning',
+                title: '错误',
+                body: '还没有选择游戏呢',
+            }).show()
+        }
+        let process = spawn(`${gamePath}`)
         process.addListener('error', () => e.reply('startGame', false))
         setTimeout(() => e.reply('startGame', true), 1000);
     })
@@ -125,16 +135,11 @@ export function readConfig() {
         ))
     }
     // 读取文件内容
-    let config = fs.readFileSync(configFile, 'utf-8')
-    let c = JSON.parse(config == '' ? '{}' : config)
-    // 判断游戏是否正在运行
-    c.genshin.starting = true
-    exec('tasklist', (_err, _std) => {
-        Object.keys(gameProcessName).forEach((e) => {
-            gameProcessName[e].forEach((processName: string) => {
-                c[e].starting = _std.includes(processName)
-            })
-        })
-    })
-    return c
+    let c = fs.readFileSync(configFile, 'utf-8')
+    let config = JSON.parse(c == '' ? '{}' : c)
+    Object.keys(config ?? {}).forEach((element: any) => {
+        if (config[element]?.loading) config[element].loading = false
+        if (config[element]?.starting) config[element].starting = false
+    });
+    return config
 }

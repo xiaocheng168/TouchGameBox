@@ -6,8 +6,6 @@ export function startGame(gameName: 'genshin' | 'starrail' | 'wuther') {
     window.loadBar.start();
     const cs = configStore()
     cs.$state.config[gameName].loading = true
-    console.log(gameName);
-
     window.electron.ipcRenderer.on('startGame', (_e, args) => {
         // 如果启动是错误的 false!
         if (!args) {
@@ -69,7 +67,7 @@ export function selectGame(gameName: 'genshin' | 'starrail' | 'wuther') {
             }
             // 申请保存配置
             window.electron.ipcRenderer.send('setConfig', toRaw(cs.$state.config))
-            reloadConfig()
+            setTimeout(() => reloadConfig(), 1000);
         }
     })
     file.click()

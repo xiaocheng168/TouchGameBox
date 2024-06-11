@@ -8,6 +8,12 @@ const fs = require('fs')
 let configFile = path.join(app.getPath('userData'), '/config.json')
 
 
+var gameProcessName = {
+    genshin: ['YuanShen.exe', 'GenshinImpact.exe'],
+    starrail: ['StarRail.exe'],
+    wuther: ['Wuthering Waves.exe', 'Client-Win64-Shipping.exe']
+}
+
 export default function gameEvent() {
     // 读取配置文件
     ipcMain.on('getConfig', (e) => e.reply('getConfig', readConfig()))
@@ -55,24 +61,28 @@ export default function gameEvent() {
         e.reply('getConfig', readConfig())
     })
 
-    var gameProcess = {
-        genshn: ChildProcess,
-        starrail: ChildProcess,
-        wuther: ChildProcess,
-    }
-
     ipcMain.on('startGame', (e, args) => {
-        let process = gameProcess[args] = spawn(`${readConfig()[args]?.path.replace(/\\/g, '/')}`)
+        let process = spawn(`${readConfig()[args]?.path.replace(/\\/g, '/')}`)
         process.addListener('error', () => e.reply('startGame', false))
-        setTimeout(() => e.reply('startGame', true), 3000);
+        setTimeout(() => e.reply('startGame', true), 1000);
     })
 
     ipcMain.on('stopGame', (e, args) => {
-        e.reply('stopGame', gameProcess[args].kill('SIGTERM'))
+        let killGameNames = gameProcessName[args]
+        exec('tasklist', (_error, st, _std) => {
+            let ns = st.split('\n').filter((e) => {
+                for (let kgn of killGameNames) { if (e.includes(kgn)) return true }
+                return false
+            })
+            ns.forEach((line) => {
+                let reg = /[0-9]{4,}/g;
+                let pid = line.match(reg)
+                exec(`taskkill /im ${pid} -f`, (err) => e.reply('stopGame', !err))
+            })
+        })
     })
 
-
-    ipcMain.on('setKeyConfig', (e, args) => {
+    ipcMain.on('setKeyConfig', (_e, args) => {
         const config = readConfig()
         config[args.key] = args.value
         writeConfig(config)
@@ -116,5 +126,15 @@ export function readConfig() {
     }
     // 读取文件内容
     let config = fs.readFileSync(configFile, 'utf-8')
-    return JSON.parse(config == '' ? '{}' : config)
+    let c = JSON.parse(config == '' ? '{}' : config)
+    // 判断游戏是否正在运行
+    c.genshin.starting = true
+    exec('tasklist', (_err, _std) => {
+        Object.keys(gameProcessName).forEach((e) => {
+            gameProcessName[e].forEach((processName: string) => {
+                c[e].starting = _std.includes(processName)
+            })
+        })
+    })
+    return c
 }

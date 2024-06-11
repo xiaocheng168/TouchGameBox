@@ -31,9 +31,12 @@ export function startGame(gameName: 'genshin' | 'starrail' | 'wuther') {
 export function stopGame(gameName: 'genshin' | 'starrail' | 'wuther') {
     const cs = configStore()
     window.loadBar.start();
+    cs.$state.config[gameName].loading = true
     window.electron.ipcRenderer.on('stopGame', (_e, _args) => {
         window.loadBar.finish()
-        cs.$state.config[gameName].starting = false
+        cs.$state.config[gameName].loading = cs.$state.config[gameName].starting = false
+        window.message.warning('游戏已关闭')
+        window.electron.ipcRenderer.removeAllListeners('stopGame')
     })
     window.electron.ipcRenderer.send('stopGame', gameName)
 }

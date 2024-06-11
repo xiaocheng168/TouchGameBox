@@ -1,4 +1,4 @@
-import { ChildProcess, exec, spawn } from "child_process";
+import { exec, spawn } from "child_process";
 import { app, ipcMain } from "electron";
 import path from "path";
 

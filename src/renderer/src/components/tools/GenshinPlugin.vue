@@ -32,7 +32,7 @@ function login() {
                 type: 'openWindow',
                 url: 'https://user.miyoushe.com/login-platform/index.html?app_id=bll8iq97cem8&theme=&token_type=4&game_biz=bbs_cn&message_origin=https%253A%252F%252Fwww.miyoushe.com&succ_back_type=message%253Alogin-platform%253Alogin-success&fail_back_type=message%253Alogin-platform%253Alogin-fail&ux_mode=popup&iframe_level=1#/login',
             })
-            window.electron.ipcRenderer.on('pluginEvent', (e, args) => {
+            window.electron.ipcRenderer.on('pluginEvent', (_e, args) => {
                 window.electron.ipcRenderer.removeAllListeners('pluginEvent')
                 if (args.cookies) {
                     window.electron.ipcRenderer.send('setKeyConfig', {

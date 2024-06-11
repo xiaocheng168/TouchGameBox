@@ -22,7 +22,6 @@
 // @ts-ignore
 import { configStore } from "@renderer/store/config";
 import { useLoadingBar, useMessage, useNotification } from "naive-ui";
-import { ref } from "vue";
 import '../../global'
 // @ts-ignore
 import { selectGame, startGame, stopGame } from "@renderer/utils/game";

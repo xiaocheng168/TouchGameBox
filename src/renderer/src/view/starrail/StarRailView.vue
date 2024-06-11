@@ -26,12 +26,9 @@
 // @ts-ignore
 import { configStore } from "@renderer/store/config";
 import { useLoadingBar, useMessage, useNotification } from "naive-ui";
-import { ref } from "vue";
 import '../../global'
 // @ts-ignore
 import { selectGame, startGame, stopGame } from "@renderer/utils/game";
-const loading = ref(false)
-const starting = ref(false)
 const gameName = 'starrail'
 window.loadBar = useLoadingBar()
 window.message = useMessage()

@@ -1,5 +1,3 @@
-
-import axios from 'axios'
 import { ipcMain, net } from 'electron'
 import { BrowserWindow } from 'electron/main'
 export function pluginEvent() {

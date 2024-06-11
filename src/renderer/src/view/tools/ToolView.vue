@@ -8,6 +8,7 @@
 <script lang="ts" setup>
 import { useLoadingBar, useMessage, useNotification } from 'naive-ui';
 import { onMounted, ref } from 'vue';
+// @ts-ignore
 const pluginVues = import.meta.glob('../../components/tools/*.vue')
 const loadPlugins = ref<any[]>([]);
 const pluginInfos = ref({})

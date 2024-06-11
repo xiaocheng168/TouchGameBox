@@ -30,9 +30,6 @@
 import { configStore } from '@renderer/store/config';
 import '../global'
 
-const cs = configStore()
-
-
 function hideWindow() {
     window.electron.ipcRenderer.send('ctrl-menu-hide', 1)
 }

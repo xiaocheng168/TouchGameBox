@@ -54,7 +54,6 @@ const cs = configStore()
 const region = ref('hk4e')
 const gameAccountOpt: Ref<any[]> = ref([])
 const gameAccount = ref()
-const isDev = import.meta.env.DEV
 interface Award {
     icon: string;
     name: string,

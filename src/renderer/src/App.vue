@@ -109,7 +109,7 @@ function changeTheme(e) {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 p {
   text-shadow: 0 0 5px black;
 }

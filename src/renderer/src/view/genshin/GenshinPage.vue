@@ -31,7 +31,7 @@ window.loadBar = useLoadingBar()
 window.message = useMessage()
 window.notific = useNotification()
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .genshin-content-box {
     display: flex;
     flex-direction: column;

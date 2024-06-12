@@ -1,4 +1,4 @@
-import { ipcMain, net } from 'electron'
+import { IncomingMessage, ipcMain, net } from 'electron'
 import { BrowserWindow } from 'electron/main'
 export function pluginEvent() {
     ipcMain.on('pluginEvent', (e, args) => {
@@ -48,15 +48,24 @@ export function pluginEvent() {
                     url: args.url,
                     method: args.method ?? 'GET',
                     headers: args.header
-                }).on('response', (r) => {
+                }).on('response', (r: IncomingMessage) => {
                     r.on('data', (res) => {
-                        e.reply('pluginEvent', {
-                            type: 'response',
-                            response: JSON.parse(res.toString())
-                        })
+                        if (r.headers['content-type'] == 'application/json') {
+                            e.reply('pluginEvent', {
+                                type: 'response',
+                                response: JSON.parse(res.toString())
+                            })
+                        } else {
+                            e.reply('pluginEvent', {
+                                type: 'response',
+                                response: res
+                            })
+                        }
                     })
                 }).end()
             }
         }
     })
+
+
 }

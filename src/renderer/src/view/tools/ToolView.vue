@@ -13,9 +13,6 @@ const pluginVues = import.meta.glob('../../components/tools/*.vue')
 const loadPlugins = ref<any[]>([]);
 const pluginInfos = ref({})
 import '../../global'
-setTimeout(() => {
-    console.log(pluginInfos.value);
-}, 1000);
 window.loadBar = useLoadingBar()
 window.message = useMessage()
 window.notific = useNotification()

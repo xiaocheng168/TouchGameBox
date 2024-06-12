@@ -15,6 +15,15 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [vue()]
-  }
+    plugins: [vue()],
+    server: {
+      proxy: {
+        '/upload': {
+          target: 'https://webstatic.mihoyo.com',
+          changeOrigin: true,
+          secure: false,
+        }
+      }
+    }
+  },
 })

@@ -36,7 +36,7 @@ window.notific = useNotification()
 const cs = configStore()
 
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .starrail-content-box {
     display: flex;
     flex-direction: column;

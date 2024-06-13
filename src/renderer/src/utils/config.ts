@@ -11,12 +11,15 @@ import '../global'
 import { configStore } from '@renderer/store/config';
 import router from '@renderer/route/route';
 
-export function reloadConfig() {
-    const cs = configStore()
-    window.electron.ipcRenderer.on('getConfig', (_e, config) => {
-        cs.$state.config = config
-        router.push(cs.$state.config.default || 'genshin')
-        window.electron.ipcRenderer.removeAllListeners('getConfig')
+export function reloadConfig(): Promise<void> {
+    return new Promise((r) => {
+        const cs = configStore()
+        window.electron.ipcRenderer.on('getConfig', (_e, config) => {
+            cs.$state.config = config
+            router.push(cs.$state.config.default || 'genshin')
+            window.electron.ipcRenderer.removeAllListeners('getConfig')
+            r()
+        })
+        window.electron.ipcRenderer.send('getConfig')
     })
-    window.electron.ipcRenderer.send('getConfig')
 }

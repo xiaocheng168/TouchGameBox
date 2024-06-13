@@ -4,8 +4,9 @@
             <span v-if="isLogin">已登录 (重新授权)</span>
             <span v-else>登录米游社</span>
         </n-button>
-        <n-button type="success" @click="showAward">签到</n-button>
-        <n-button type="success" @click="signAll" :loading="isAutoSign" :disabled="isAutoSign">一键签到</n-button>
+        <n-button type="success" @click="showAward" :disabled="!isLogin">签到</n-button>
+        <n-button type="success" @click="signAll" :loading="isAutoSign"
+            :disabled="isAutoSign || !isLogin">一键签到</n-button>
         <n-drawer v-model:show="awards.show" width="500" :close-on-esc="!isAutoSign" :mask-closable="!isAutoSign">
             <n-drawer-content title="签到">
                 <n-spin :show="awards.loading">
@@ -40,11 +41,11 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { Ref, onMounted, ref } from 'vue';
+import { Ref, onMounted, ref, toRaw } from 'vue';
 import '../../global'
 import { useDialog } from 'naive-ui';
 import { requestHttp } from '@renderer/utils/plugin';
-import { getKeyConfig } from '@renderer/utils/config';
+import { getKeyConfig, reloadConfig } from '@renderer/utils/config';
 import { configStore } from '@renderer/store/config';
 import { md5 } from 'js-md5';
 const loading = ref(false)
@@ -68,6 +69,9 @@ const awards = ref({
         awards: [] as Award[]
     }
 })
+
+console.log('qwq');
+
 
 function isTodau(day: number) {
     return day == new Date().getDate()
@@ -140,7 +144,7 @@ function login() {
                         value: args.cookies
                     })
                     window.message.success('登录完成 - 米游社')
-                    checkLogin()
+                    reloadConfig().then(() => checkLogin())
                 } else {
                     window.message.error('取消登录')
                 }
@@ -167,8 +171,17 @@ async function showAward(): Promise<void> {
                     value: JSON.stringify(account)
                 })
             })
+            // 如果没有选择，默认第一个
             if (!gameAccount.value && gameAccountOpt.value.length > 0) gameAccount.value = gameAccountOpt.value[0].value
+            // 检查是否包含
+            let isInclude = false
+            for (const game of toRaw(gameAccountOpt.value)) {
+                isInclude = (game.value == gameAccount.value)
+                if (isInclude) break
+            }
+            if (!isInclude) gameAccount.value = gameAccountOpt.value[0].value
             await getSignAwards(region.value).then((e: any) => {
+                console.log(e);
                 awards.value.info = e.response.data
                 awards.value.loading = false
                 loading.destroy()

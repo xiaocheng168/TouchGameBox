@@ -5,7 +5,8 @@
             <span v-else>登录米游社</span>
         </n-button>
         <n-button type="success" @click="showAward">签到</n-button>
-        <n-drawer v-model:show="awards.show" width="500">
+        <n-button type="success" @click="signAll" :loading="isAutoSign" :disabled="isAutoSign">一键签到</n-button>
+        <n-drawer v-model:show="awards.show" width="500" :close-on-esc="!isAutoSign" :mask-closable="!isAutoSign">
             <n-drawer-content title="签到">
                 <n-spin :show="awards.loading">
                     <n-form label-align="left" label-width="auto">
@@ -21,7 +22,7 @@
                         <div :style="!isTodau(index + 1) ? { opacity: 0.2 } : { opacity: 1 }"
                             v-for="(award, index) in awards.info.awards" class="award-box"
                             @click="signToday(award, index + 1)" :key="index">
-                            <img :src="award.icon" crossorigin="anonymous" />
+                            <n-image :src="award.icon" crossorigin="anonymous" lazy />
                             <div>
                                 <p>{{ award.name }} x {{ award.cnt }}</p>
                             </div>
@@ -54,6 +55,7 @@ const cs = configStore()
 const region = ref('hk4e')
 const gameAccountOpt: Ref<any[]> = ref([])
 const gameAccount = ref()
+const isAutoSign = ref(false)
 interface Award {
     icon: string;
     name: string,
@@ -71,26 +73,48 @@ function isTodau(day: number) {
     return day == new Date().getDate()
 }
 
+
+/**
+ * 一键签到
+ */
+async function signAll() {
+    isAutoSign.value = true
+    await showAward()
+    gameAccount.value = undefined
+    for (const game of gameOptions.value) {
+        region.value = game.value
+        await showAward()
+        let today = new Date().getDate()
+        for (const account of gameAccountOpt.value) {
+            gameAccount.value = account.value
+            await signToday(awards.value.info.awards[today - 1], today)
+        }
+    }
+    isAutoSign.value = false
+}
 /**
  * 发起签到
  */
-function signToday(award: Award, day: number) {
-    if (day != new Date().getDate()) {
-        window.message.error(`此奖励不是今天签到获得的!`)
-        return;
-    }
-    awards.value.loading = true
-    let signLoading = window.message.loading('正在签到', { duration: 5555555 })
-    sign().then((e: any) => {
-        let code = e.response.retcode
-        if (code === 0) {
-            window.message.success(`${award.name} x ${award.cnt}`)
-        } else {
-            window.message.success(`${e.response.message} (${code})`)
+async function signToday(award: Award, day: number): Promise<void> {
+    return new Promise((r) => {
+        if (day != new Date().getDate()) {
+            window.message.error(`此奖励不是今天签到获得的!`)
+            return;
         }
-        awards.value.loading = false
-        signLoading.destroy()
-        awards.value.show = false
+        awards.value.loading = true
+        let signLoading = window.message.loading('正在签到', { duration: 5555555 })
+        sign().then((e: any) => {
+            let code = e.response.retcode
+            if (code === 0) {
+                window.message.success(`${award.name} x ${award.cnt}`)
+            } else {
+                window.message.success(`${e.response.message} (${code})`)
+            }
+            awards.value.loading = false
+            signLoading.destroy()
+            awards.value.show = false
+            r()
+        })
     })
 }
 /**
@@ -129,24 +153,27 @@ function login() {
 /**
  * 获取签到奖励
  */
-function showAward() {
-    awards.value.show = true
-    awards.value.loading = true
-    let loading = window.message.loading('在跑了....', { duration: 9999999 })
-    // 获取游戏账户
-    getGameAccount().then((e: any) => {
-        gameAccountOpt.value = []
-        e.response.data.list.forEach((account: any) => {
-            gameAccountOpt.value.push({
-                label: `Lv.${account.level} ${account.nickname} (${account.game_uid})`,
-                value: JSON.stringify(account)
+async function showAward(): Promise<void> {
+    return new Promise((resolve) => {
+        awards.value.show = true
+        awards.value.loading = true
+        let loading = window.message.loading('在跑了....', { duration: 9999999 })
+        // 获取游戏账户
+        getGameAccount().then(async (e: any) => {
+            gameAccountOpt.value = []
+            e.response.data.list?.forEach((account: any) => {
+                gameAccountOpt.value.push({
+                    label: `${account.region_name} Lv.${account.level} ${account.nickname} (${account.game_uid})`,
+                    value: JSON.stringify(account)
+                })
             })
-        });
-        gameAccount.value = gameAccountOpt.value[0].value
-        getSignAwards(region.value).then((e: any) => {
-            awards.value.info = e.response.data
-            awards.value.loading = false
-            loading.destroy()
+            if (!gameAccount.value && gameAccountOpt.value.length > 0) gameAccount.value = gameAccountOpt.value[0].value
+            await getSignAwards(region.value).then((e: any) => {
+                awards.value.info = e.response.data
+                awards.value.loading = false
+                loading.destroy()
+                setTimeout(() => resolve(), 500);
+            })
         })
     })
 }

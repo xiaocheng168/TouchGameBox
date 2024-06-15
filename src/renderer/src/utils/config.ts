@@ -6,6 +6,13 @@ export function getKeyConfig(key: string, data = (_value: any) => { }) {
     window.electron.ipcRenderer.send('getKeyConfig', key)
 }
 
+export function setKeyConfig(key: string, data: any) {
+    window.electron.ipcRenderer.send('setKeyConfig', {
+        key: key,
+        value: data
+    })
+}
+
 
 import '../global'
 import { configStore } from '@renderer/store/config';
